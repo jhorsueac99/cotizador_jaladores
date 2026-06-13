@@ -59,7 +59,7 @@ async function loadProducts() {
         return;
       }
     } catch (error) {
-      console.warn(`No se pudo cargar ${path} - app.js:35`, error);
+      console.warn(`No se pudo cargar ${path} - app.js:62`, error);
     }
   }
 
@@ -392,7 +392,7 @@ async function loadCompanyInfo() {
         return;
       }
     } catch (error) {
-      console.error("Error cargando empresa.json - app.js:124", error);
+      console.error("Error cargando empresa.json - app.js:395", error);
     }
   }
 }
@@ -462,7 +462,7 @@ async function generarPDF(cliente, productosSeleccionados, total, empresa) {
     try {
       logoDataUrl = await loadImageAsDataUrl(logoUrl);
     } catch (error) {
-      console.warn("No se pudo cargar el logo para el PDF", error);
+      console.warn("No se pudo cargar el logo para el PDF - app.js:465", error);
     }
   }
 
@@ -583,7 +583,7 @@ async function generarPDF(cliente, productosSeleccionados, total, empresa) {
       try {
         imageDataUrl = await loadImageAsDataUrl(imageUrl);
       } catch (error) {
-        console.warn("No se pudo cargar la imagen del producto para el PDF", error);
+        console.warn("No se pudo cargar la imagen del producto para el PDF - app.js:586", error);
       }
     }
 
