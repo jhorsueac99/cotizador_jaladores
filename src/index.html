@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cotizador</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Arial, sans-serif;
+        --brand-1: #7c3aed;
+        --brand-2: #a78bfa;
+        --brand-3: #ede9fe;
+        --brand-4: #f5f3ff;
+      }
+
+      body {
+        margin: 0;
+        background: linear-gradient(135deg, var(--brand-4) 0%, #fdf4ff 100%);
+        color: #1f2937;
+      }
+
+      .company-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        max-width: 900px;
+        margin: 1.5rem auto 0;
+        padding: 1.2rem 1.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, var(--brand-4) 100%);
+        border-radius: 20px;
+        box-shadow: 0 12px 35px rgba(124, 58, 237, 0.12);
+      }
+
+      .company-info img {
+        width: 90px;
+        height: auto;
+        object-fit: contain;
+      }
+
+      .company-info h2,
+      .company-info p {
+        margin: 0;
+      }
+
+      .company-info p {
+        color: #64748b;
+        font-size: 0.95rem;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: #fff;
+        border-radius: 24px;
+        box-shadow: 0 16px 45px rgba(124, 58, 237, 0.12);
+      }
+
+      h1 {
+        margin-top: 0;
+        color: var(--brand-1);
+        font-size: 1.8rem;
+      }
+
+      .hero-title {
+        margin-bottom: 0.4rem;
+      }
+
+      .subtitle {
+        margin: 0 0 1rem;
+        color: #6b7280;
+        font-size: 0.98rem;
+      }
+
+      form {
+        display: grid;
+        gap: 1rem;
+      }
+
+      label,
+      legend {
+        font-weight: 600;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        padding: 0.8rem 0.95rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        box-sizing: border-box;
+        font-size: 1rem;
+      }
+
+      .search-box {
+        margin-bottom: 0.6rem;
+      }
+
+      .filters-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-bottom: 0.7rem;
+      }
+
+      .selection-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 0.75rem;
+      }
+
+      .selected-preview {
+        margin-top: 0.8rem;
+        padding: 1rem 1.05rem;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        background: linear-gradient(135deg, #ffffff 0%, var(--brand-4) 100%);
+        box-shadow: 0 8px 18px rgba(124, 58, 237, 0.06);
+      }
+
+      .selected-preview h3 {
+        margin: 0 0 0.6rem;
+        color: var(--brand-1);
+        font-size: 1rem;
+      }
+
+      .selected-preview ul {
+        margin: 0;
+        padding-left: 1rem;
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .selected-preview li {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        color: #334155;
+      }
+
+      .selected-preview .empty-state {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.95rem;
+      }
+
+      .preview-total {
+        margin: 0.7rem 0 0;
+        color: #0f172a;
+      }
+
+      .filter-btn,
+      .sort-btn,
+      .clear-btn {
+        border: 1px solid var(--brand-2);
+        background: #fff;
+        color: var(--brand-1);
+        padding: 0.5rem 0.8rem;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 0.92rem;
+        transition: all 0.2s ease;
+      }
+
+      .filter-btn:hover,
+      .sort-btn:hover,
+      .clear-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(124, 58, 237, 0.12);
+      }
+
+      .filter-btn.active,
+      .sort-btn.active {
+        background: var(--brand-1);
+        color: #fff;
+      }
+
+      .product-count {
+        margin: 0.2rem 0 0.7rem;
+        color: #6b7280;
+        font-size: 0.95rem;
+      }
+
+      .catalog-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1rem;
+        align-items: start;
+      }
+
+      .catalog-column {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .product-list {
+        display: grid;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 1rem;
+        align-items: stretch;
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+      }
+
+      .product-list::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .product-list::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 999px;
+      }
+
+      .product-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 0.85rem;
+        align-items: stretch;
+        height: 100%;
+        padding: 1rem;
+        border: 1px solid var(--brand-3);
+        border-radius: 16px;
+        background: linear-gradient(180deg, #ffffff 0%, var(--brand-4) 100%);
+        box-shadow: 0 8px 22px rgba(124, 58, 237, 0.08);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(124, 58, 237, 0.12);
+      }
+
+      .product-card.selected {
+        border-color: var(--brand-1);
+        box-shadow: 0 10px 24px rgba(124, 58, 237, 0.16);
+      }
+
+      .product-label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start;
+        width: 100%;
+        flex: 1;
+      }
+
+      .product-info {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        width: 100%;
+      }
+
+      .product-image {
+        width: 84px;
+        height: 84px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+        cursor: zoom-in;
+      }
+
+      .product-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+
+      .product-title {
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .product-helper {
+        color: #64748b;
+        font-size: 0.86rem;
+      }
+
+      .gallery-panel {
+        position: sticky;
+        top: 1rem;
+        padding: 1rem;
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+        background: linear-gradient(180deg, #ffffff 0%, var(--brand-4) 100%);
+        box-shadow: 0 12px 30px rgba(124, 58, 237, 0.09);
+      }
+
+      .gallery-panel h3 {
+        margin: 0 0 0.25rem;
+        color: var(--brand-1);
+      }
+
+      .gallery-subtitle {
+        margin: 0 0 0.8rem;
+        color: #64748b;
+        font-size: 0.9rem;
+      }
+
+      .gallery-main-image {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+      }
+
+      .gallery-thumbnails {
+        display: flex;
+        gap: 0.55rem;
+        margin-top: 0.7rem;
+        overflow-x: auto;
+        padding-bottom: 0.2rem;
+      }
+
+      .gallery-thumb-btn {
+        padding: 0;
+        border: 2px solid transparent;
+        border-radius: 10px;
+        overflow: hidden;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .gallery-thumb-btn.active {
+        border-color: var(--brand-1);
+      }
+
+      .gallery-thumb {
+        width: 62px;
+        height: 62px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .gallery-info {
+        margin-top: 0.8rem;
+        display: grid;
+        gap: 0.55rem;
+      }
+
+      .gallery-info h4 {
+        margin: 0;
+        color: #0f172a;
+      }
+
+      .gallery-description {
+        margin: 0;
+        color: #475569;
+        font-size: 0.94rem;
+        line-height: 1.5;
+      }
+
+      .gallery-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: grid;
+        place-items: center;
+        padding: 1rem;
+      }
+
+      .gallery-modal[hidden] {
+        display: none;
+      }
+
+      .gallery-modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(4px);
+      }
+
+      .gallery-modal-card {
+        position: relative;
+        width: min(960px, 100%);
+        max-height: min(88vh, 860px);
+        overflow: hidden;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+      }
+
+      .gallery-modal-content {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+        gap: 1rem;
+        padding: 1rem;
+        height: 100%;
+      }
+
+      .gallery-modal-close {
+        position: absolute;
+        top: 0.7rem;
+        right: 0.7rem;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.95);
+        color: #0f172a;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+        z-index: 2;
+      }
+
+      .gallery-modal-main-image {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+      }
+
+      .gallery-modal-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        padding: 0.3rem 0.1rem 0.3rem 0;
+      }
+
+      .gallery-modal-details h3 {
+        margin: 0;
+        color: var(--brand-1);
+      }
+
+      .gallery-specs {
+        display: grid;
+        gap: 0.5rem;
+      }
+
+      .gallery-specs div {
+        padding: 0.55rem 0.65rem;
+        border-radius: 10px;
+        background: var(--brand-4);
+      }
+
+      .gallery-specs span {
+        display: block;
+        margin-bottom: 0.2rem;
+        color: #64748b;
+        font-size: 0.74rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .product-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        margin-top: auto;
+        font-size: 0.9rem;
+      }
+
+      .price {
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 1rem;
+      }
+
+      .summary {
+        padding: 1rem 1.2rem;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--brand-1) 0%, #6d28d9 100%);
+        color: #fff;
+        font-size: 1.1rem;
+        box-shadow: 0 12px 28px rgba(124, 58, 237, 0.25);
+      }
+
+      button {
+        padding: 0.9rem 1rem;
+        border: 0;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--brand-1) 0%, #6d28d9 100%);
+        color: #fff;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 12px 24px rgba(124, 58, 237, 0.25);
+      }
+
+      .quote-result {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        border: 1px solid #dbeafe;
+        border-radius: 14px;
+        background: #f8fbff;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+      }
+
+      @media (min-width: 768px) {
+        .product-list {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .product-card {
+          min-height: 100%;
+        }
+
+        .product-controls {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+        }
+
+        .price {
+          align-self: flex-end;
+        }
+
+        .catalog-shell {
+          grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+        }
+
+        .gallery-panel {
+          position: sticky;
+          top: 1rem;
+        }
+
+        .gallery-modal-card {
+          width: min(960px, 100%);
+          max-height: min(88vh, 860px);
+          border-radius: 24px;
+          overflow: hidden;
+        }
+
+        .gallery-modal-content {
+          grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+        }
+
+        #generateQuote {
+          display: block;
+          width: min(100%, 320px);
+          margin: 0 auto;
+          padding: 1rem 1.2rem;
+          font-size: 1.05rem;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .product-list {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .catalog-shell {
+          grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.8fr);
+        }
+      }
+
+      @media (max-width: 767px) {
+        .company-info,
+        .container {
+          margin: 1rem;
+          padding: 1rem;
+        }
+
+        .product-list {
+          grid-template-columns: 1fr;
+          max-height: none;
+          overflow: visible;
+        }
+
+        .product-controls {
+          width: 100%;
+        }
+
+        .catalog-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .gallery-panel {
+          position: static;
+        }
+
+        .gallery-modal {
+          padding: 0;
+        }
+
+        .gallery-modal-card {
+          width: 100vw;
+          max-width: none;
+          height: 100vh;
+          max-height: 100vh;
+          border-radius: 0;
+          overflow-y: auto;
+        }
+
+        .gallery-modal-content {
+          grid-template-columns: 1fr;
+          padding: 0.9rem;
+        }
+
+        .gallery-modal-details {
+          padding: 0;
+        }
+
+        #generateQuote {
+          width: 100%;
+          display: block;
+          margin: 0;
+          padding: 1rem 1.1rem;
+          font-size: 1.02rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        body {
+          font-size: 15px;
+        }
+
+        .company-info img {
+          width: 72px;
+        }
+
+        .product-info {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .product-image {
+          width: 100%;
+          max-width: 140px;
+          height: auto;
+          aspect-ratio: 1 / 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="company-info">
+      <img id="company-logo" alt="Logo de la empresa" width="120" />
+      <h2 id="company-name"></h2>
+      <p id="company-address"></p>
+      <p id="company-phone"></p>
+    </header>
+
+    <main class="container">
+      <h1 class="hero-title">Catálogo premium de jaladores</h1>
+      <p class="subtitle">Seleccione modelos para puertas y mamparas con una experiencia visual elegante y rápida.</p>
+      <form id="quoteForm">
+        <label for="cliente">Nombre del cliente</label>
+        <input id="cliente" name="cliente" type="text" placeholder="Ej. Alejandro Pérez" required />
+
+        <fieldset>
+          <legend>Productos</legend>
+          <input id="searchProducts" class="search-box" type="text" placeholder="Buscar jalador por nombre" />
+          <div class="filters-row">
+            <button type="button" class="filter-btn active" data-filter="all">Todos</button>
+            <button type="button" class="filter-btn" data-filter="puerta">Puerta</button>
+            <button type="button" class="filter-btn" data-filter="mampara">Mampara</button>
+          </div>
+          <div class="filters-row">
+            <button type="button" class="sort-btn active" data-sort="default">Por defecto</button>
+            <button type="button" class="sort-btn" data-sort="precio-asc">Precio ↑</button>
+            <button type="button" class="sort-btn" data-sort="precio-desc">Precio ↓</button>
+            <button type="button" class="clear-btn" id="clearFilters">Limpiar filtros</button>
+          </div>
+          <div class="catalog-shell">
+            <div class="catalog-column">
+              <p id="productsCount" class="product-count">0 productos</p>
+              <div id="productsList" class="product-list"></div>
+              <div class="selection-actions">
+                <button type="button" class="clear-btn" id="clearSelection">Limpiar selección</button>
+              </div>
+              <div id="selectedPreview" class="selected-preview">
+                <h3>Productos seleccionados</h3>
+                <p class="empty-state">Aún no has seleccionado productos.</p>
+              </div>
+            </div>
+
+            <aside class="gallery-panel" id="galleryPanel">
+              <h3>Vista ampliada</h3>
+              <p class="gallery-subtitle">Pasa el cursor o toca la imagen para explorar el jalador.</p>
+              <img id="galleryMainImage" class="gallery-main-image" alt="Vista ampliada del producto" />
+              <div id="galleryThumbs" class="gallery-thumbnails"></div>
+              <div class="gallery-info">
+                <h4 id="galleryName">Selecciona un producto</h4>
+                <p id="galleryDescription" class="gallery-description">Elige un jalador para ver su detalle, medidas y vista en distintos ángulos.</p>
+                <div class="gallery-specs">
+                  <div>
+                    <span>Marca</span>
+                    <strong id="galleryBrand">Maphe</strong>
+                  </div>
+                  <div>
+                    <span>Modelo</span>
+                    <strong id="galleryModel">Estándar</strong>
+                  </div>
+                  <div>
+                    <span>Medidas</span>
+                    <strong id="galleryMeasures">Según ficha técnica</strong>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </fieldset>
+
+        <div class="summary">
+          <strong>Total estimado:</strong>
+          <span id="total">S/ 0.00</span>
+        </div>
+
+        <button type="button" id="generateQuote">Generar cotización</button>
+      </form>
+
+      <section id="quoteResult" class="quote-result" hidden>
+        <h2>Cotización</h2>
+        <p id="quoteClient"></p>
+        <ul id="quoteItems"></ul>
+        <p><strong>Total:</strong> <span id="quoteTotal"></span></p>
+      </section>
+    </main>
+
+    <div id="galleryModal" class="gallery-modal" hidden>
+      <div class="gallery-modal-backdrop" data-close-modal="true"></div>
+      <div class="gallery-modal-card" role="dialog" aria-modal="true" aria-labelledby="galleryModalTitle">
+        <button type="button" class="gallery-modal-close" id="galleryModalClose" aria-label="Cerrar vista ampliada">×</button>
+        <div class="gallery-modal-content">
+          <div>
+            <img id="galleryModalMainImage" class="gallery-modal-main-image" alt="Imagen ampliada del producto" />
+            <div id="galleryModalThumbs" class="gallery-thumbnails"></div>
+          </div>
+          <div class="gallery-modal-details">
+            <h3 id="galleryModalTitle">Producto</h3>
+            <p id="galleryModalDescription" class="gallery-description"></p>
+            <div class="gallery-specs">
+              <div>
+                <span>Marca</span>
+                <strong id="galleryModalBrand">Maphe</strong>
+              </div>
+              <div>
+                <span>Modelo</span>
+                <strong id="galleryModalModel">Estándar</strong>
+              </div>
+              <div>
+                <span>Medidas</span>
+                <strong id="galleryModalMeasures">Según ficha técnica</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

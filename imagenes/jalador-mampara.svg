@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" rx="20" fill="#f8fafc"/>
+  <rect x="70" y="70" width="260" height="160" rx="16" fill="#e2e8f0"/>
+  <rect x="110" y="95" width="180" height="110" rx="10" fill="#475569"/>
+  <rect x="135" y="118" width="130" height="18" rx="4" fill="#f8fafc"/>
+  <text x="200" y="245" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#0f172a">Mampara</text>
+</svg>
